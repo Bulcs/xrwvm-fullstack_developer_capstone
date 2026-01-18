@@ -36,20 +36,30 @@ const Dealer = () => {
     }
   }
 
-  const get_reviews = async ()=>{
-    const res = await fetch(reviews_url, {
-      method: "GET"
-    });
+const get_reviews = async () => {
+  try {
+    const res = await fetch(reviews_url);
+
+    if (!res.ok) {
+      throw new Error("Erro na requisição");
+    }
+
     const retobj = await res.json();
-    
-    if(retobj.status === 200) {
-      if(retobj.reviews.length > 0){
-        setReviews(retobj.reviews)
+    const reviews = retobj.reviews || [];
+
+    if (retobj.status === 200) {
+      if (reviews.length > 0) {
+        setReviews(reviews);
+        setUnreviewed(false);
       } else {
         setUnreviewed(true);
       }
     }
+  } catch (error) {
+    console.error("Erro ao buscar reviews:", error);
   }
+};
+
 
   const senti_icon = (sentiment)=>{
     let icon = sentiment === "positive"?positive_icon:sentiment==="negative"?negative_icon:neutral_icon;
